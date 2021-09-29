@@ -1,0 +1,9 @@
+(Select nvl(D.Name,'NULL') Doctor, nvl(P.Name,'NULL') Professor, nvl(S.Name,'NULL') Singer, nvl(A.Name,'NULL') Actor
+from
+(Select Name, row_number() over (partition by occupation order by name) id from Occupations where Occupation = 'Doctor') D
+full outer join
+(Select Name, row_number() over (partition by occupation order by name) id from Occupations where Occupation = 'Professor') P on D.id = P.id
+full outer join
+(Select Name, row_number() over (partition by occupation order by name) id from Occupations where Occupation = 'Singer') S on P.id = S.id
+full outer join
+(Select Name, row_number() over (partition by occupation order by name nulls lAST) id from Occupations where Occupation = 'Actor') A on p.id = A.id );
