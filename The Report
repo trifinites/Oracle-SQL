@@ -1,0 +1,7 @@
+select (case when grade > 7 then name else 'NULL' end ) sname, grade, marks
+from 
+(select s.name, g.grade, s.marks 
+from Students s, Grades g
+where s.marks >= g.min_mark 
+and s.marks <= max_mark) d
+order by grade desc, name asc, marks;
