@@ -1,0 +1,13 @@
+select w.id, p.age, w.coins_needed, w.power
+  from Wands w,
+       Wands_Property p,
+       (select p.age, w.power, min(w.coins_needed) coins_needed
+          from Wands w, Wands_Property p
+         where w.code = p.code
+           and p.is_evil = 0
+         group by p.age, w.power) d
+ where w.code = p.code
+   and p.age = d.age
+   and w.power = d.power
+   and w.coins_needed = d.coins_needed
+ order by power desc, age desc;
