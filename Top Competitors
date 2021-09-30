@@ -1,0 +1,11 @@
+select hacker_id, name
+  from (select hacker_id, name, count(challenge_id) cnt
+          from (select h.hacker_id, h.name, c.challenge_id
+                  from Hackers h, Difficulty d, Submissions s, Challenges c
+                 where h.hacker_id = s.hacker_id
+                   and d.difficulty_level = c.difficulty_level
+                   and c.challenge_id = s.challenge_id
+                   and d.score = s.score)
+         group by hacker_id, name
+        having count(challenge_id) > 1
+         order by count(challenge_id) desc, hacker_id);
