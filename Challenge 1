@@ -1,0 +1,17 @@
+with data as
+ (select h.hacker_id, h.name, count(c.challenge_id) cnt
+    from Hackers h, Challenges c
+   where h.hacker_id = c.hacker_id
+   group by h.hacker_id, h.name),
+duplicte_student_cnt as
+ (select cnt, count(cnt) row_cnt
+    from data
+   where cnt <> (select max(cnt) max_cnt from data)
+   group by cnt
+  having count(cnt) > 1)
+select distinct hacker_id, name, cnt
+  from (select data.hacker_id, data.name, data.cnt
+          from data
+         where data.cnt not in
+               (select duplicte_student_cnt.cnt from duplicte_student_cnt))
+ order by cnt desc, hacker_id;
