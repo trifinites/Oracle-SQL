@@ -1,0 +1,35 @@
+WITH SUM_View_Stats AS
+ (SELECT challenge_id,
+         sum(total_views) total_views,
+         sum(total_unique_views) total_unique_views
+    FROM View_Stats
+   GROUP BY challenge_id),
+SUM_Submission_Stats AS
+ (SELECT challenge_id,
+         sum(total_submissions) total_submissions,
+         sum(total_accepted_submissions) total_accepted_submissions
+    FROM Submission_Stats
+   GROUP BY challenge_id)
+select *
+  from (select c.contest_id,
+               c.hacker_id,
+               c.name,
+               sum(ss.total_submissions) tot_sub,
+               sum(ss.total_accepted_submissions) tot_accept_sub,
+               sum(vs.total_views) tot_view,
+               sum(vs.total_unique_views) tot_unq_view
+          from Contests             c,
+               colleges             co,
+               SUM_Submission_Stats ss,
+               SUM_View_Stats       vs,
+               Challenges           ch
+         where c.contest_id = co.contest_id
+           and co.college_id = ch.college_id
+           and ch.challenge_id = vs.challenge_id(+)
+           and ch.challenge_id = ss.challenge_id(+)
+         group by c.contest_id, c.hacker_id, c.name)
+ where tot_sub != 0
+   and tot_accept_sub != 0
+   and tot_view != 0
+   and tot_unq_view != 0
+ order by contest_id;
