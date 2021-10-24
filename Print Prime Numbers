@@ -1,0 +1,12 @@
+with data as
+ (select rownum srnum from dual connect by rownum < 1001)
+select listagg(srnum, '&') WITHIN GROUP(ORDER BY srnum)
+  from (select b.srnum
+          from data a, data b
+         where a.srnum <= b.srnum
+         group by b.srnum
+        having count(case b.srnum / a.srnum
+          when trunc(b.srnum / a.srnum) then
+           'Y'
+        end) = 2)
+ order by srnum;
